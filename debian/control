@@ -1,0 +1,12 @@
+Source: ros-lyrical-foonathan-memory-vendor
+Section: misc
+Priority: optional
+Maintainer: Miguel Company <miguelcompany@eprosima.com>
+Build-Depends: debhelper (>= 9.0.0), cmake, git, ros-lyrical-ament-cmake-copyright <!nocheck>, ros-lyrical-ament-cmake-lint-cmake <!nocheck>, ros-lyrical-ament-cmake-test <!nocheck>, ros-lyrical-ament-cmake-xmllint <!nocheck>, ros-lyrical-ros-workspace
+Homepage: https://index.ros.org/p/foonathan_memory_vendor/#lyrical
+Standards-Version: 3.9.2
+
+Package: ros-lyrical-foonathan-memory-vendor
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, cmake, ros-lyrical-ros-workspace
+Description: Foonathan/memory vendor package for Fast-RTPS.
