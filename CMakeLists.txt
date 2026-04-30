@@ -1,9 +1,23 @@
 cmake_minimum_required(VERSION 3.14)
-project(foonathan_memory_vendor VERSION "1.3.1")
+project(foonathan_memory_vendor VERSION "1.4.1")
 
-find_package(foonathan_memory QUIET)
+option(FOONATHAN_MEMORY_FORCE_VENDORED_BUILD
+        "Force foonathan memory vendor package build even if it is already installed in the system" OFF)
 
-if(NOT foonathan_memory_FOUND)
+if(NOT FOONATHAN_MEMORY_FORCE_VENDORED_BUILD)
+  execute_process(COMMAND
+      ${CMAKE_COMMAND}
+      --find-package
+      -DNAME=foonathan_memory
+      -DCOMPILER_ID=$<IF:$<BOOL:${WIN32}>,MSVC,GNU>
+      -DLANGUAGE=CXX
+      -DMODE=EXIST
+      -DCMAKE_FIND_DEBUG_MODE=ON
+    ERROR_QUIET
+    RESULT_VARIABLE _EXIT_CODE)
+endif()
+
+if(NOT _EXIT_CODE EQUAL 0)
   ###############################################################################
   # Default shared libraries
   ###############################################################################
@@ -70,15 +84,9 @@ if(NOT foonathan_memory_FOUND)
   endif()
   include(ExternalProject)
 
-  if(INSTALLER_PLATFORM)
-    set(PATCH_COMMAND_STR PATCH_COMMAND
-      git apply ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt.patch &&
-      sed -i -e "s/INSTALLER_PLATFORM/${INSTALLER_PLATFORM}/g" CMakeLists.txt)
-  endif()
-
   externalproject_add(foo_mem-ext
-  GIT_REPOSITORY https://github.com/foonathan/memory.git
-  GIT_TAG v0.7-3
+  GIT_REPOSITORY https://github.com/eProsima/memory.git
+  GIT_TAG vendor-1.4.1
   TIMEOUT 600
   # Avoid the update (git pull) and so the recompilation of foonathan_memory library each time.
   UPDATE_COMMAND ""
@@ -96,7 +104,7 @@ if(NOT foonathan_memory_FOUND)
   install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/foo_mem_ext_prj_install/
   DESTINATION ${CMAKE_INSTALL_PREFIX})
 else()
-  message(STATUS "Found foonathan_memory ${foonathan_memory_VERSION}")
+  message(STATUS "Found foonathan_memory")
 endif()
 
 configure_file(foonathan_memory_vendorConfig.cmake.in
